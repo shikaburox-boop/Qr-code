@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>สั่งอาหารประจำโต๊ะ</title>
+    <title>สั่งอาหารประจำโต๊ะ (A la Carte)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
@@ -20,63 +20,164 @@
         <div>
             <h2 class="font-bold text-slate-800 text-lg mb-2 border-l-4 border-rose-600 pl-2">🥩 หมวดเนื้อสัตว์พรีเมียม</h2>
             <div class="space-y-3">
-                <script>
-                    function createMenuCard(name, price) {
-                        document.write(`
-                            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
-                                <div><h3 class="font-bold text-slate-800">${name}</h3><p class="text-sm text-rose-600 font-semibold">${price} บาท</p></div>
-                                <div class="flex items-center space-x-3">
-                                    <button onclick="changeQty('${name}', ${price}, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
-                                    <button onclick="changeQty('${name}', ${price}, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
-                                </div>
-                            </div>
-                        `);
-                    }
-                    createMenuCard('เนื้อริบอายวากิวสไลด์', 129);
-                    createMenuCard('เนื้อเสือร้องไห้ออสเตรเลีย', 99);
-                    createMenuCard('หมูสามชั้นคุโรบุตะ', 79);
-                    createMenuCard('สันคอหมูสไลด์เกรด A', 69);
-                    createMenuCard('ตับหมูสดสไลด์', 49);
-                </script>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div><h3 class="font-bold text-slate-800">เนื้อริบอายวากิวสไลด์</h3><p class="text-sm text-rose-600 font-semibold">129 บาท</p></div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeQty('เนื้อริบอายวากิวสไลด์', 129, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('เนื้อริบอายวากิวสไลด์', 129, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div><h3 class="font-bold text-slate-800">เนื้อเสือร้องไห้ออสเตรเลีย</h3><p class="text-sm text-rose-600 font-semibold">99 บาท</p></div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeQty('เนื้อเสือร้องไห้ออสเตรเลีย', 99, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('เนื้อเสือร้องไห้ออสเตรเลีย', 99, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div><h3 class="font-bold text-slate-800">หมูสามชั้นคุโรบุตะ</h3><p class="text-sm text-rose-600 font-semibold">79 บาท</p></div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeQty('หมูสามชั้นคุโรบุตะ', 79, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('หมูสามชั้นคุโรบุตะ', 79, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div><h3 class="font-bold text-slate-800">สันคอหมูสไลด์เกรด A</h3><p class="text-sm text-rose-600 font-semibold">69 บาท</p></div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeQty('สันคอหมูสไลด์เกรด A', 69, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('สันคอหมูสไลด์เกรด A', 69, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div><h3 class="font-bold text-slate-800">ตับหมูสดสไลด์</h3><p class="text-sm text-rose-600 font-semibold">49 บาท</p></div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeQty('ตับหมูสดสไลด์', 49, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('ตับหมูสดสไลด์', 49, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div>
             <h2 class="font-bold text-slate-800 text-lg mb-2 border-l-4 border-cyan-500 pl-2">🐟 หมวดอาหารทะเล</h2>
             <div class="space-y-3">
-                <script>
-                    createMenuCard('กุ้งแชบ๊วยแกะเปลือก', 89);
-                    createMenuCard('ปลาหมึกกล้วยหั่นชิ้น', 79);
-                    createMenuCard('หอยแมลงภู่นิวซีแลนด์', 99);
-                    createMenuCard('เนื้อปลาแซลมอนสดนอร์เวย์', 119);
-                    createMenuCard('แมงกะพรุนหมักน้ำมันงา', 59);
-                </script>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div><h3 class="font-bold text-slate-800">กุ้งแชบ๊วยแกะเปลือก</h3><p class="text-sm text-rose-600 font-semibold">89 บาท</p></div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeQty('กุ้งแชบ๊วยแกะเปลือก', 89, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('กุ้งแชบ๊วยแกะเปลือก', 89, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div><h3 class="font-bold text-slate-800">ปลาหมึกกล้วยหั่นชิ้น</h3><p class="text-sm text-rose-600 font-semibold">79 บาท</p></div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeQty('ปลาหมึกกล้วยหั่นชิ้น', 79, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('ปlaหมึกกล้วยหั่นชิ้น', 79, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div><h3 class="font-bold text-slate-800">หอยแมลงภู่นิวซีแลนด์</h3><p class="text-sm text-rose-600 font-semibold">99 บาท</p></div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeQty('หอยแมลงภู่นิวซีแลนด์', 99, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('หอยแมลงภู่นิวซีแลนด์', 99, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div><h3 class="font-bold text-slate-800">เนื้อปลาแซลมอนสดนอร์เวย์</h3><p class="text-sm text-rose-600 font-semibold">119 บาท</p></div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeQty('เนื้อปลาแซลมอนสดนอร์เวย์', 119, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('เนื้อปลาแซลมอนสดนอร์เวย์', 119, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div><h3 class="font-bold text-slate-800">แมงกะพรุนหมักน้ำมันงา</h3><p class="text-sm text-rose-600 font-semibold">59 บาท</p></div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeQty('แมงกะพรุนหมักน้ำมันงา', 59, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('แมงกะพรุนหมักน้ำมันงา', 59, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div>
             <h2 class="font-bold text-slate-800 text-lg mb-2 border-l-4 border-green-500 pl-2">🥬 หมวดผัก & ของเคียง</h2>
             <div class="space-y-3">
-                <script>
-                    createMenuCard('ชุดผักสุขภาพรวมมิตร', 69);
-                    createMenuCard('เห็ดเข็มทองสด', 25);
-                    createMenuCard('เต้าหู้ชีสลาวา', 49);
-                    createMenuCard('ลูกชิ้นปลาภูเก็ต', 39);
-                    createMenuCard('ไข่ไก่สดอนามัย (ฟอง)', 12);
-                </script>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div><h3 class="font-bold text-slate-800">ชุดผักสุขภาพรวมมิตร</h3><p class="text-sm text-rose-600 font-semibold">69 บาท</p></div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeQty('ชุดผักสุขภาพรวมมิตร', 69, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('ชุดผักสุขภาพรวมมิตร', 69, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div><h3 class="font-bold text-slate-800">เห็ดเข็มทองสด</h3><p class="text-sm text-rose-600 font-semibold">25 บาท</p></div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeQty('เห็ดเข็มทองสด', 25, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('เห็ดเข็มทองสด', 25, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div><h3 class="font-bold text-slate-800">เต้าหู้ชีสลาวา</h3><p class="text-sm text-rose-600 font-semibold">49 บาท</p></div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeQty('เต้าหู้ชีสลาวา', 49, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('เต้าหู้ชีสลาวา', 49, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div><h3 class="font-bold text-slate-800">ลูกชิ้นปลาภูเก็ต</h3><p class="text-sm text-rose-600 font-semibold">39 บาท</p></div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeQty('ลูกชิ้นปลาภูเก็ต', 39, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('ลูกชิ้นปลาภูเก็ต', 39, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div><h3 class="font-bold text-slate-800">ไข่ไก่สดอนามัย (ฟอง)</h3><p class="text-sm text-rose-600 font-semibold">12 บาท</p></div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeQty('ไข่ไก่สดอนามัย (ฟอง)', 12, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('ไข่ไก่สดอนามัย (ฟอง)', 12, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div>
             <h2 class="font-bold text-slate-800 text-lg mb-2 border-l-4 border-amber-500 pl-2">🥤 เครื่องดื่ม & ของหวาน</h2>
             <div class="space-y-3">
-                <script>
-                    createMenuCard('น้ำดื่มสะอาดพร้อมน้ำแข็ง', 15);
-                    createMenuCard('น้ำเก๊กฮวยเย็น (เหยือก)', 59);
-                    createMenuCard('ชาเขียวรีฟิล', 39);
-                    createMenuCard('ไอศกรีมช็อกโกแลตฟัดจ์', 35);
-                    createMenuCard('เฉาก๊วยนมสดโบราณ', 29);
-                </script>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div><h3 class="font-bold text-slate-800">น้ำดื่มสะอาดพร้อมน้ำแข็ง</h3><p class="text-sm text-rose-600 font-semibold">15 บาท</p></div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeQty('น้ำดื่มสะอาดพร้อมน้ำแข็ง', 15, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('น้ำดื่มสะอาดพร้อมน้ำแข็ง', 15, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div><h3 class="font-bold text-slate-800">น้ำเก๊กฮวยเย็น (เหยือก)</h3><p class="text-sm text-rose-600 font-semibold">59 บาท</p></div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeQty('น้ำเก๊กฮวยเย็น (เหยือก)', 59, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('น้ำเก๊กฮวยเย็น (เหยือก)', 59, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div><h3 class="font-bold text-slate-800">ชาเขียวรีฟิล</h3><p class="text-sm text-rose-600 font-semibold">39 บาท</p></div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeQty('ชาเขียวรีฟิล', 39, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('ชาเขียวรีฟิล', 39, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div><h3 class="font-bold text-slate-800">ไอศกรีมช็อกโกแลตฟัดจ์</h3><p class="text-sm text-rose-600 font-semibold">35 บาท</p></div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeQty('ไอศกรีมช็อกโกแลตฟัดจ์', 35, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('ไอศกรีมช็อกโกแลตฟัดจ์', 35, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div><h3 class="font-bold text-slate-800">เฉาก๊วยนมสดโบราณ</h3><p class="text-sm text-rose-600 font-semibold">29 บาท</p></div>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeQty('เฉาก๊วยนมสดโบราณ', 29, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('เฉาก๊วยนมสดโบราณ', 29, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -85,13 +186,12 @@
     <div class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 shadow-2xl">
         <div class="max-w-md mx-auto">
             <h3 class="font-bold text-sm text-slate-700 mb-1">🛒 ตะกร้าสินค้าปัจจุบัน (ออเดอร์รอบนี้):</h3>
-            <div id="cart-container" class="max-h-24 overflow-y-auto mb-3 text-slate-400 italic text-center py-2">ยังไม่มีรายการอาหาร</div>
-            
+            <div id="cart-container" class="max-h-24 overflow-y-auto mb-3 text-slate-400 italic text-center py-2">ยังไม่มีของ</div>
             <div class="flex justify-between items-center mb-3">
-                <span class="font-bold text-slate-800">รวมราคาออเดอร์รอบนี้:</span>
+                <span class="font-bold text-slate-800">ราคารวมรอบนี้:</span>
                 <span class="text-xl font-bold text-rose-600"><span id="total-price">0</span> บาท</span>
             </div>
-            <button id="btn-submit" onclick="sendOrder()" class="w-full bg-rose-600 text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:bg-rose-700 transition">🚀 ส่งรายการเข้าครัว</button>
+            <button id="btn-submit" onclick="sendOrder()" class="w-full bg-rose-600 text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:bg-rose-700 transition">🚀 ยืนยันส่งเข้าครัว</button>
         </div>
     </div>
 
@@ -100,6 +200,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const tableNum = urlParams.get('table') || "X";
 
+        // 🚀 ระบบความปลอดภัย: ตรวจเช็คสถานะโต๊ะจาก Server ก่อนแสดงผลหน้าเว็บ
         socket.emit('check-table-status', { table: tableNum }, (response) => {
             if (response.status !== 'active') {
                 Swal.fire({
@@ -110,6 +211,7 @@
                     allowOutsideClick: false
                 });
             } else {
+                // หากโต๊ะเปิดระบบอยู่ ให้โชว์หน้าจอ และดึงเวลานับถอยหลังมาทำงาน
                 document.getElementById('main-body').classList.remove('hidden');
                 document.getElementById('table-heading').innerText = tableNum;
                 startTimer(response.expires);
@@ -122,7 +224,7 @@
                 const timeLeft = expiresAt - Date.now();
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
-                    lockOrderScreen('หมดเวลานั่งทานอาหาร 90 นาทีแล้วครับ');
+                    lockOrderScreen('หมดเวลาการสั่งอาหาร 90 นาทีแล้วครับ');
                     return;
                 }
                 const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
@@ -136,7 +238,7 @@
             const btn = document.getElementById('btn-submit');
             btn.disabled = true;
             btn.className = "w-full bg-slate-400 text-white py-3 rounded-xl font-bold text-lg cursor-not-allowed";
-            btn.innerText = "ไม่สามารถสั่งออเดอร์ได้";
+            btn.innerText = "ไม่สามารถสั่งอาหารได้";
             Swal.fire('แจ้งเตือน', msg, 'warning');
         }
 
@@ -155,16 +257,17 @@
                 total += cart[name].price * cart[name].qty;
                 container.innerHTML += `<div class="flex justify-between text-sm py-1 border-b"><span>🔹 ${name} (x${cart[name].qty})</span><span>${cart[name].price * cart[name].qty} บ.</span></div>`;
             });
-            if(Object.keys(cart).length === 0) container.innerHTML = 'ยังไม่มีรายการอาหาร';
+            if(Object.keys(cart).length === 0) container.innerHTML = 'ยังไม่มีของ';
             document.getElementById('total-price').innerText = total;
         }
 
         window.sendOrder = () => {
-            if(Object.keys(cart).length === 0) return Swal.fire('ตะกร้าว่าง', 'เลือกอาหารก่อนส่งครับ', 'warning');
+            if(Object.keys(cart).length === 0) return Swal.fire('ตะกร้าว่าง', 'เลือกอาหารก่อนครับ', 'warning');
             
-            const items = Object.keys(cart).map(name => ({ name, qty: cart[name].qty, price: cart[name].price }));
+            const items = Object.keys(cart).map(name => ({ name, qty: cart[name].qty }));
             const totalPrice = Object.keys(cart).reduce((sum, name) => sum + (cart[name].price * cart[name].qty), 0);
 
+            // ส่งข้อมูลไปยังเซิร์ฟเวอร์ และดักฟังขากลับว่าโต๊ะนี้ถูกเช็คบิลตัดสิทธิ์ไปแล้วหรือยัง
             socket.emit('submit-order', { table: tableNum, items, totalPrice }, (res) => {
                 if (res.success) {
                     Swal.fire('สำเร็จ!', 'ส่งออเดอร์เข้าห้องครัวแล้วครับ', 'success');
