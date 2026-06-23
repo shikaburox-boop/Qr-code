@@ -15,51 +15,44 @@
         <div id="timer" class="bg-amber-700 px-3 py-1 rounded-full text-xs font-semibold">กำลังคำนวณเวลา...</div>
     </div>
 
-    <div class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 shadow-2xl">
-        <div class="max-w-md mx-auto">
-            <h3 class="font-bold text-sm text-gray-700 mb-1">🛒 ตะกร้าสินค้า (ดูก่อนส่ง):</h3>
-            <div id="cart-container" class="max-h-24 overflow-y-auto mb-3 text-gray-500 italic text-center py-2">ยังไม่มีของ</div>
-            <div class="flex justify-between items-center mb-3">
-                <span class="font-bold">ราคารวมรอบนี้:</span>
-                <span class="text-xl font-bold text-amber-600"><span id="total-price">0</span> บาท</span>
-            </div>
-            <button id="btn-submit" onclick="sendOrder()" class="w-full bg-emerald-500 text-white py-3 rounded-xl font-bold text-lg shadow-lg">🚀 ยืนยันส่งเข้าครัว</button>
-        </div>
-    </div>
-
-    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+    <div class="p-4 max-w-md mx-auto space-y-6">
+        
+        <div>
+            <h2 class="font-bold text-slate-800 text-lg mb-2 border-l-4 border-amber-500 pl-2">🥩 หมวดเนื้อสัตว์พรีเมียม</h2>
+            <div class="space-y-3">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
                     <div><h3 class="font-bold text-slate-800">เนื้อริบอายวากิวสไลด์</h3><p class="text-sm text-rose-600 font-semibold">129 บาท</p></div>
                     <div class="flex items-center space-x-3">
                         <button onclick="changeQty('เนื้อริบอายวากิวสไลด์', 129, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
-                        <button onclick="changeQty('เนื้อริบอายวากิวสไลด์', 129, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                        <button onclick="changeQty('เนื้อริบอายวากิวสไลด์', 129, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold text-lg">+</button>
                     </div>
                 </div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
                     <div><h3 class="font-bold text-slate-800">เนื้อเสือร้องไห้ออสเตรเลีย</h3><p class="text-sm text-rose-600 font-semibold">99 บาท</p></div>
                     <div class="flex items-center space-x-3">
                         <button onclick="changeQty('เนื้อเสือร้องไห้ออสเตรเลีย', 99, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
-                        <button onclick="changeQty('เนื้อเสือร้องไห้ออสเตรเลีย', 99, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                        <button onclick="changeQty('เนื้อเสือร้องไห้ออสเตรเลีย', 99, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold text-lg">+</button>
                     </div>
                 </div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
                     <div><h3 class="font-bold text-slate-800">หมูสามชั้นคุโรบุตะ</h3><p class="text-sm text-rose-600 font-semibold">79 บาท</p></div>
                     <div class="flex items-center space-x-3">
                         <button onclick="changeQty('หมูสามชั้นคุโรบุตะ', 79, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
-                        <button onclick="changeQty('หมูสามชั้นคุโรบุตะ', 79, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                        <button onclick="changeQty('หมูสามชั้นคุโรบุตะ', 79, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold text-lg">+</button>
                     </div>
                 </div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
                     <div><h3 class="font-bold text-slate-800">สันคอหมูสไลด์เกรด A</h3><p class="text-sm text-rose-600 font-semibold">69 บาท</p></div>
                     <div class="flex items-center space-x-3">
                         <button onclick="changeQty('สันคอหมูสไลด์เกรด A', 69, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
-                        <button onclick="changeQty('สันคอหมูสไลด์เกรด A', 69, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                        <button onclick="changeQty('สันคอหมูสไลด์เกรด A', 69, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold text-lg">+</button>
                     </div>
                 </div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
                     <div><h3 class="font-bold text-slate-800">ตับหมูสดสไลด์</h3><p class="text-sm text-rose-600 font-semibold">49 บาท</p></div>
                     <div class="flex items-center space-x-3">
                         <button onclick="changeQty('ตับหมูสดสไลด์', 49, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
-                        <button onclick="changeQty('ตับหมูสดสไลด์', 49, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                        <button onclick="changeQty('ตับหมูสดสไลด์', 49, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold text-lg">+</button>
                     </div>
                 </div>
             </div>
@@ -72,35 +65,35 @@
                     <div><h3 class="font-bold text-slate-800">กุ้งแชบ๊วยแกะเปลือก</h3><p class="text-sm text-rose-600 font-semibold">89 บาท</p></div>
                     <div class="flex items-center space-x-3">
                         <button onclick="changeQty('กุ้งแชบ๊วยแกะเปลือก', 89, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
-                        <button onclick="changeQty('กุ้งแชบ๊วยแกะเปลือก', 89, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                        <button onclick="changeQty('กุ้งแชบ๊วยแกะเปลือก', 89, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold text-lg">+</button>
                     </div>
                 </div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
-                    <div><h3 class="font-bold text-slate-800">ปลาหมึกกล้วยหั่นชิ้น</h3><p class="text-sm text-rose-600 font-semibold">79 บาท</p></div>
+                    <div><h3 class="font-bold text-slate-800">ปlaหมึกกล้วยหั่นชิ้น</h3><p class="text-sm text-rose-600 font-semibold">79 บาท</p></div>
                     <div class="flex items-center space-x-3">
-                        <button onclick="changeQty('ปลาหมึกกล้วยหั่นชิ้น', 79, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
-                        <button onclick="changeQty('ปlaหมึกกล้วยหั่นชิ้น', 79, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                        <button onclick="changeQty('ปlaหมึกกล้วยหั่นชิ้น', 79, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('ปlaหมึกกล้วยหั่นชิ้น', 79, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold text-lg">+</button>
                     </div>
                 </div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
                     <div><h3 class="font-bold text-slate-800">หอยแมลงภู่นิวซีแลนด์</h3><p class="text-sm text-rose-600 font-semibold">99 บาท</p></div>
                     <div class="flex items-center space-x-3">
                         <button onclick="changeQty('หอยแมลงภู่นิวซีแลนด์', 99, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
-                        <button onclick="changeQty('หอยแมลงภู่นิวซีแลนด์', 99, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                        <button onclick="changeQty('หอยแมลงภู่นิวซีแลนด์', 99, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold text-lg">+</button>
                     </div>
                 </div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
                     <div><h3 class="font-bold text-slate-800">เนื้อปลาแซลมอนสดนอร์เวย์</h3><p class="text-sm text-rose-600 font-semibold">119 บาท</p></div>
                     <div class="flex items-center space-x-3">
-                        <button onclick="changeQty('เนื้อปลาแซลมอนสดนอร์เวย์', 119, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
-                        <button onclick="changeQty('เนื้อปลาแซลมอนสดนอร์เวย์', 119, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                        <button onclick="changeQty('เนื้อปลาแซsalmonสดนอร์เวย์', 119, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
+                        <button onclick="changeQty('เนื้อปลาแซsalmonสดนอร์เวย์', 119, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold text-lg">+</button>
                     </div>
                 </div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
                     <div><h3 class="font-bold text-slate-800">แมงกะพรุนหมักน้ำมันงา</h3><p class="text-sm text-rose-600 font-semibold">59 บาท</p></div>
                     <div class="flex items-center space-x-3">
                         <button onclick="changeQty('แมงกะพรุนหมักน้ำมันงา', 59, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
-                        <button onclick="changeQty('แมงกะพรุนหมักน้ำมันงา', 59, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                        <button onclick="changeQty('แมงกะพรุนหมักน้ำมันงา', 59, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold text-lg">+</button>
                     </div>
                 </div>
             </div>
@@ -120,28 +113,28 @@
                     <div><h3 class="font-bold text-slate-800">เห็ดเข็มทองสด</h3><p class="text-sm text-rose-600 font-semibold">25 บาท</p></div>
                     <div class="flex items-center space-x-3">
                         <button onclick="changeQty('เห็ดเข็มทองสด', 25, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
-                        <button onclick="changeQty('เห็ดเข็มทองสด', 25, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                        <button onclick="changeQty('เห็ดเข็มทองสด', 25, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold text-lg">+</button>
                     </div>
                 </div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
                     <div><h3 class="font-bold text-slate-800">เต้าหู้ชีสลาวา</h3><p class="text-sm text-rose-600 font-semibold">49 บาท</p></div>
                     <div class="flex items-center space-x-3">
                         <button onclick="changeQty('เต้าหู้ชีสลาวา', 49, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
-                        <button onclick="changeQty('เต้าหู้ชีสลาวา', 49, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                        <button onclick="changeQty('เต้าหู้ชีสลาวา', 49, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold text-lg">+</button>
                     </div>
                 </div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
                     <div><h3 class="font-bold text-slate-800">ลูกชิ้นปลาภูเก็ต</h3><p class="text-sm text-rose-600 font-semibold">39 บาท</p></div>
                     <div class="flex items-center space-x-3">
                         <button onclick="changeQty('ลูกชิ้นปลาภูเก็ต', 39, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
-                        <button onclick="changeQty('ลูกชิ้นปลาภูเก็ต', 39, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                        <button onclick="changeQty('ลูกชิ้นปลาภูเก็ต', 39, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold text-lg">+</button>
                     </div>
                 </div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
                     <div><h3 class="font-bold text-slate-800">ไข่ไก่สดอนามัย (ฟอง)</h3><p class="text-sm text-rose-600 font-semibold">12 บาท</p></div>
                     <div class="flex items-center space-x-3">
                         <button onclick="changeQty('ไข่ไก่สดอนามัย (ฟอง)', 12, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
-                        <button onclick="changeQty('ไข่ไก่สดอนามัย (ฟอง)', 12, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                        <button onclick="changeQty('ไข่ไก่สดอนามัย (ฟอง)', 12, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold text-lg">+</button>
                     </div>
                 </div>
             </div>
@@ -154,39 +147,53 @@
                     <div><h3 class="font-bold text-slate-800">น้ำดื่มสะอาดพร้อมน้ำแข็ง</h3><p class="text-sm text-rose-600 font-semibold">15 บาท</p></div>
                     <div class="flex items-center space-x-3">
                         <button onclick="changeQty('น้ำดื่มสะอาดพร้อมน้ำแข็ง', 15, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
-                        <button onclick="changeQty('น้ำดื่มสะอาดพร้อมน้ำแข็ง', 15, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                        <button onclick="changeQty('น้ำดื่มสะอาดพร้อมน้ำแข็ง', 15, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold text-lg">+</button>
                     </div>
                 </div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
                     <div><h3 class="font-bold text-slate-800">น้ำเก๊กฮวยเย็น (เหยือก)</h3><p class="text-sm text-rose-600 font-semibold">59 บาท</p></div>
                     <div class="flex items-center space-x-3">
                         <button onclick="changeQty('น้ำเก๊กฮวยเย็น (เหยือก)', 59, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
-                        <button onclick="changeQty('น้ำเก๊กฮวยเย็น (เหยือก)', 59, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                        <button onclick="changeQty('น้ำเก๊กฮวยเย็น (เหยือก)', 59, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold text-lg">+</button>
                     </div>
                 </div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
                     <div><h3 class="font-bold text-slate-800">ชาเขียวรีฟิล</h3><p class="text-sm text-rose-600 font-semibold">39 บาท</p></div>
                     <div class="flex items-center space-x-3">
                         <button onclick="changeQty('ชาเขียวรีฟิล', 39, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
-                        <button onclick="changeQty('ชาเขียวรีฟิล', 39, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                        <button onclick="changeQty('ชาเขียวรีฟิล', 39, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold text-lg">+</button>
                     </div>
                 </div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
                     <div><h3 class="font-bold text-slate-800">ไอศกรีมช็อกโกแลตฟัดจ์</h3><p class="text-sm text-rose-600 font-semibold">35 บาท</p></div>
                     <div class="flex items-center space-x-3">
                         <button onclick="changeQty('ไอศกรีมช็อกโกแลตฟัดจ์', 35, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
-                        <button onclick="changeQty('ไอศกรีมช็อกโกแลตฟัดจ์', 35, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                        <button onclick="changeQty('ไอศกรีมช็อกโกแลตฟัดจ์', 35, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold text-lg">+</button>
                     </div>
                 </div>
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
                     <div><h3 class="font-bold text-slate-800">เฉาก๊วยนมสดโบราณ</h3><p class="text-sm text-rose-600 font-semibold">29 บาท</p></div>
                     <div class="flex items-center space-x-3">
                         <button onclick="changeQty('เฉาก๊วยนมสดโบราณ', 29, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
-                        <button onclick="changeQty('เฉาก๊วยนมสดโบราณ', 29, 1)" class="w-8 h-8 bg-rose-600 text-white rounded-full font-bold text-lg">+</button>
+                        <button onclick="changeQty('เฉาก๊วยนมสดโบราณ', 29, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold text-lg">+</button>
                     </div>
                 </div>
             </div>
         </div>
+
+    </div>
+
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 shadow-2xl">
+        <div class="max-w-md mx-auto">
+            <h3 class="font-bold text-sm text-gray-700 mb-1">🛒 ตะกร้าสินค้า (ดูก่อนส่ง):</h3>
+            <div id="cart-container" class="max-h-24 overflow-y-auto mb-3 text-gray-500 italic text-center py-2">ยังไม่มีของ</div>
+            <div class="flex justify-between items-center mb-3">
+                <span class="font-bold">ราคารวมรอบนี้:</span>
+                <span class="text-xl font-bold text-amber-600"><span id="total-price">0</span> บาท</span>
+            </div>
+            <button id="btn-submit" onclick="sendOrder()" class="w-full bg-emerald-500 text-white py-3 rounded-xl font-bold text-lg shadow-lg">🚀 ยืนยันส่งเข้าครัว</button>
+        </div>
+    </div>
 
     <script>
         const socket = io(window.location.origin);
@@ -234,7 +241,8 @@
         window.sendOrder = () => {
             if(Object.keys(cart).length === 0) return Swal.fire('ตะกร้าว่าง', 'เลือกอาหารก่อนครับ', 'warning');
             
-            const items = Object.keys(cart).map(name => ({ name, qty: cart[name].qty }));
+            // 🆕 แก้ไขตรงนี้: ใส่ปีกกาและดึงค่า price ส่งไปด้วยเพื่อให้เซิร์ฟเวอร์อลาคาร์ทนำไปคำนวณเงินได้สำเร็จ
+            const items = Object.keys(cart).map(name => ({ name, qty: cart[name].qty, price: cart[name].price }));
             const totalPrice = Object.keys(cart).reduce((sum, name) => sum + (cart[name].price * cart[name].qty), 0);
 
             // ส่งข้อมูลผ่านท่อ Socket ไปยัง Server หลังบ้าน
