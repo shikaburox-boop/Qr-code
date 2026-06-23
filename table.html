@@ -3,24 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>สั่งอาหารประจำโต๊ะ (A la Carte)</title>
+    <title>สั่งอาหารประจำโต๊ะ (Socket.io)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
 </head>
-<body class="bg-slate-50 min-h-screen pb-44 hidden" id="main-body">
+<body class="bg-gray-100 min-h-screen pb-44">
 
-    <div class="bg-rose-600 text-white p-4 sticky top-0 shadow-md flex justify-between items-center z-50">
+    <div class="bg-amber-500 text-white p-4 sticky top-0 shadow-md flex justify-between items-center z-50">
         <h1 class="text-xl font-bold">🍲 โต๊ะที่ <span id="table-heading">-</span></h1>
-        <div id="timer" class="bg-rose-800 px-3 py-1 rounded-full text-xs font-semibold">กำลังคำนวณเวลา...</div>
+        <div id="timer" class="bg-amber-700 px-3 py-1 rounded-full text-xs font-semibold">กำลังคำนวณเวลา...</div>
     </div>
 
-    <div class="p-4 max-w-md mx-auto space-y-6">
-        
-        <div>
-            <h2 class="font-bold text-slate-800 text-lg mb-2 border-l-4 border-rose-600 pl-2">🥩 หมวดเนื้อสัตว์พรีเมียม</h2>
-            <div class="space-y-3">
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 shadow-2xl">
+        <div class="max-w-md mx-auto">
+            <h3 class="font-bold text-sm text-gray-700 mb-1">🛒 ตะกร้าสินค้า (ดูก่อนส่ง):</h3>
+            <div id="cart-container" class="max-h-24 overflow-y-auto mb-3 text-gray-500 italic text-center py-2">ยังไม่มีของ</div>
+            <div class="flex justify-between items-center mb-3">
+                <span class="font-bold">ราคารวมรอบนี้:</span>
+                <span class="text-xl font-bold text-amber-600"><span id="total-price">0</span> บาท</span>
+            </div>
+            <button id="btn-submit" onclick="sendOrder()" class="w-full bg-emerald-500 text-white py-3 rounded-xl font-bold text-lg shadow-lg">🚀 ยืนยันส่งเข้าครัว</button>
+        </div>
+    </div>
+
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex justify-between items-center">
                     <div><h3 class="font-bold text-slate-800">เนื้อริบอายวากิวสไลด์</h3><p class="text-sm text-rose-600 font-semibold">129 บาท</p></div>
                     <div class="flex items-center space-x-3">
                         <button onclick="changeQty('เนื้อริบอายวากิวสไลด์', 129, -1)" class="w-8 h-8 bg-slate-200 rounded-full font-bold text-lg text-slate-700">-</button>
@@ -181,66 +188,29 @@
             </div>
         </div>
 
-    </div>
-
-    <div class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 shadow-2xl">
-        <div class="max-w-md mx-auto">
-            <h3 class="font-bold text-sm text-slate-700 mb-1">🛒 ตะกร้าสินค้าปัจจุบัน (ออเดอร์รอบนี้):</h3>
-            <div id="cart-container" class="max-h-24 overflow-y-auto mb-3 text-slate-400 italic text-center py-2">ยังไม่มีของ</div>
-            <div class="flex justify-between items-center mb-3">
-                <span class="font-bold text-slate-800">ราคารวมรอบนี้:</span>
-                <span class="text-xl font-bold text-rose-600"><span id="total-price">0</span> บาท</span>
-            </div>
-            <button id="btn-submit" onclick="sendOrder()" class="w-full bg-rose-600 text-white py-3 rounded-xl font-bold text-lg shadow-lg hover:bg-rose-700 transition">🚀 ยืนยันส่งเข้าครัว</button>
-        </div>
-    </div>
-
     <script>
         const socket = io(window.location.origin);
         const urlParams = new URLSearchParams(window.location.search);
         const tableNum = urlParams.get('table') || "X";
+        const expiresAt = parseInt(urlParams.get('expires')) || Date.now();
 
-        // 🚀 ระบบความปลอดภัย: ตรวจเช็คสถานะโต๊ะจาก Server ก่อนแสดงผลหน้าเว็บ
-        socket.emit('check-table-status', { table: tableNum }, (response) => {
-            if (response.status !== 'active') {
-                Swal.fire({
-                    title: 'ไม่สามารถสั่งอาหารได้!',
-                    text: response.message,
-                    icon: 'error',
-                    showConfirmButton: false,
-                    allowOutsideClick: false
-                });
-            } else {
-                // หากโต๊ะเปิดระบบอยู่ ให้โชว์หน้าจอ และดึงเวลานับถอยหลังมาทำงาน
-                document.getElementById('main-body').classList.remove('hidden');
-                document.getElementById('table-heading').innerText = tableNum;
-                startTimer(response.expires);
+        document.getElementById('table-heading').innerText = tableNum;
+
+        // จับเวลา 90 นาที
+        const timerInterval = setInterval(() => {
+            const timeLeft = expiresAt - Date.now();
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('timer').innerText = "หมดเวลาสั่ง";
+                document.getElementById('btn-submit').disabled = true;
+                document.getElementById('btn-submit').innerText = "QR หมดอายุ";
+                Swal.fire('หมดเวลา!', 'กรุณาขอ QR Code ใหม่', 'error');
+                return;
             }
-        });
-
-        let timerInterval;
-        function startTimer(expiresAt) {
-            timerInterval = setInterval(() => {
-                const timeLeft = expiresAt - Date.now();
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    lockOrderScreen('หมดเวลาการสั่งอาหาร 90 นาทีแล้วครับ');
-                    return;
-                }
-                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-                document.getElementById('timer').innerText = `เหลือเวลา: ${minutes}:${seconds < 10 ? '0':''}${seconds}`;
-            }, 1000);
-        }
-
-        function lockOrderScreen(msg) {
-            document.getElementById('timer').innerText = "หมดสิทธิ์สั่ง";
-            const btn = document.getElementById('btn-submit');
-            btn.disabled = true;
-            btn.className = "w-full bg-slate-400 text-white py-3 rounded-xl font-bold text-lg cursor-not-allowed";
-            btn.innerText = "ไม่สามารถสั่งอาหารได้";
-            Swal.fire('แจ้งเตือน', msg, 'warning');
-        }
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+            document.getElementById('timer').innerText = `เหลือเวลา: ${minutes}:${seconds < 10 ? '0':''}${seconds}`;
+        }, 1000);
 
         let cart = {};
         window.changeQty = (name, price, num) => {
@@ -267,15 +237,11 @@
             const items = Object.keys(cart).map(name => ({ name, qty: cart[name].qty }));
             const totalPrice = Object.keys(cart).reduce((sum, name) => sum + (cart[name].price * cart[name].qty), 0);
 
-            // ส่งข้อมูลไปยังเซิร์ฟเวอร์ และดักฟังขากลับว่าโต๊ะนี้ถูกเช็คบิลตัดสิทธิ์ไปแล้วหรือยัง
-            socket.emit('submit-order', { table: tableNum, items, totalPrice }, (res) => {
-                if (res.success) {
-                    Swal.fire('สำเร็จ!', 'ส่งออเดอร์เข้าห้องครัวแล้วครับ', 'success');
-                    cart = {}; renderCart();
-                } else {
-                    lockOrderScreen(res.message);
-                }
-            });
+            // ส่งข้อมูลผ่านท่อ Socket ไปยัง Server หลังบ้าน
+            socket.emit('submit-order', { table: tableNum, items, totalPrice });
+
+            Swal.fire('สำเร็จ!', 'ส่งออเดอร์เข้าห้องครัวแล้วครับ', 'success');
+            cart = {}; renderCart();
         };
     </script>
 </body>
