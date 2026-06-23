@@ -35,7 +35,7 @@
     </div>
 
     <script>
-        // เชื่อมต่อไปยัง Server หลังบ้าน (เปลี่ยนเป็น URL ของเซิร์ฟเวอร์คุณเมื่อเอาขึ้นออนไลน์จริง)
+        // เชื่อมต่อไปยัง Server หลังบ้าน
         const socket = io(window.location.origin);
 
         window.generateTableQR = () => {
@@ -48,6 +48,9 @@
             document.getElementById("qrcode").innerHTML = "";
             new QRCode(document.getElementById("qrcode"), { text: orderURL, width: 180, height: 180 });
             document.getElementById("qr-label").innerText = `โต๊ะ ${tableNum} (หมดอายุใน 90 นาที)`;
+
+            // 🆕 จุดที่แก้ไขเพิ่ม: ส่งข้อมูลไปลงทะเบียนเปิดโต๊ะที่ server.js ทันทีเมื่อกดปุ่ม
+            socket.emit('open-table', { table: tableNum, expires: expireTime });
         };
 
         // รับออเดอร์มาวาดหน้าจอใหม่ทุกครั้งที่อัปเดต
