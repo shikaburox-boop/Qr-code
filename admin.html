@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบหลังบ้านร้านอาหาร (Socket.io)</title>
+    <title>ระบบหลังบ้านร้านอาหาร (Admin)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
@@ -11,15 +11,17 @@
 <body class="bg-slate-900 min-h-screen text-white p-6">
 
     <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        
         <div class="bg-slate-800 p-6 rounded-2xl shadow-xl h-fit">
             <h2 class="text-xl font-bold mb-4 text-amber-400">🚪 ระบบเปิดโต๊ะอาหาร (Socket)</h2>
             <div class="mb-4">
                 <label class="block text-sm mb-1">ระบุเลขโต๊ะ:</label>
-                <input type="number" id="table-input" class="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white font-bold text-center text-xl">
+                <input type="number" id="table-input" class="w-full p-2 rounded bg-slate-700 border border-slate-600 text-white font-bold text-center text-xl" placeholder="เช่น 1, 2, 3">
             </div>
             <button onclick="generateTableQR()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2 rounded transition">
-                ⚡ สร้าง QR Code (90 นาที)
+                ⚡ สร้าง QR Code และเปิดโต๊ะ (90 นาที)
             </button>
+            
             <div class="mt-6 flex flex-col items-center bg-white p-4 rounded-xl text-black">
                 <div id="qrcode"></div>
                 <p id="qr-label" class="text-xs font-bold mt-2 text-gray-600 text-center">ยังไม่ได้สร้าง QR</p>
@@ -29,28 +31,38 @@
         <div class="bg-slate-800 p-6 rounded-2xl shadow-xl md:col-span-2">
             <h2 class="text-xl font-bold mb-4 text-emerald-400">🍳 รายการออเดอร์ห้องครัว (Real-time)</h2>
             <div id="order-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-black">
-                <p class="text-gray-400 italic text-center w-full py-4">เชื่อมต่อเซิร์ฟเวอร์...</p>
+                <p class="text-gray-400 italic text-center w-full py-4 text-white">กำลังเชื่อมต่อเซิร์ฟเวอร์...</p>
             </div>
         </div>
+
     </div>
 
     <script>
-        // เชื่อมต่อไปยัง Server หลังบ้าน (เปลี่ยนเป็น URL ของเซิร์ฟเวอร์คุณเมื่อเอาขึ้นออนไลน์จริง)
+        // เชื่อมต่อไปยัง Server หลังบ้าน (ใช้ window.location.origin เพื่อรองรับทั้ง localhost และตอนอยู่บนเซิร์ฟเวอร์ Render)
         const socket = io(window.location.origin);
 
         window.generateTableQR = () => {
             const tableNum = document.getElementById('table-input').value;
             if(!tableNum) return alert('กรุณากรอกเลขโต๊ะ');
 
-            const expireTime = Date.now() + (90 * 60 * 1000); 
-            const orderURL = `${window.location.origin}/table.html?table=${tableNum}&expires=${expireTime}`;
+            const expireTime = Date.now() + (90 * 60 * 1000); // ตั้งเวลา 90 นาที
+            
+            // ลิงก์ปลายทางที่จะให้ลูกค้าสแกน (ตัด expires ออกจาก URL เพราะไปเก็บที่ฝั่ง Server เพื่อความปลอดภัยแล้ว)
+            const orderURL = `${window.location.origin}/table.html?table=${tableNum}`;
+
+            // 🚀 ยิงบอกเซิร์ฟเวอร์หลังบ้านให้บันทึกสิทธิ์เปิดโต๊ะ และตั้งเวลาหมดอายุ
+            socket.emit('open-table', { table: tableNum, expires: expireTime });
 
             document.getElementById("qrcode").innerHTML = "";
-            new QRCode(document.getElementById("qrcode"), { text: orderURL, width: 180, height: 180 });
-            document.getElementById("qr-label").innerText = `โต๊ะ ${tableNum} (หมดอายุใน 90 นาที)`;
+            new QRCode(document.getElementById("qrcode"), {
+                text: orderURL,
+                width: 180,
+                height: 180
+            });
+            document.getElementById("qr-label").innerText = `โต๊ะ ${tableNum} (สแกนสั่งอาหารได้ทันที)`;
         };
 
-        // รับออเดอร์มาวาดหน้าจอใหม่ทุกครั้งที่อัปเดต
+        // รับออเดอร์มาวาดหน้าจอใหม่ทุกครั้งที่มีการเปลี่ยนแปลงข้อมูลจากฝั่ง Server
         socket.on('init-orders', renderOrders);
         socket.on('order-updated', renderOrders);
 
@@ -60,7 +72,7 @@
 
             const keys = Object.keys(activeOrders);
             if (keys.length === 0) {
-                orderList.innerHTML = '<p class="text-gray-400 italic text-center w-full py-4">ยังไม่มีออเดอร์</p>';
+                orderList.innerHTML = '<p class="text-gray-400 italic text-center w-full py-4 text-white">ยังไม่มีออเดอร์ค้างในขณะนี้</p>';
                 return;
             }
 
@@ -79,8 +91,8 @@
                     <p class="text-gray-700 mb-2"><b>รายการ:</b> ${itemsText}</p>
                     <p class="text-sm text-gray-500 mb-3">รวมราคา: ${order.totalPrice} บาท</p>
                     <div class="flex space-x-2">
-                        ${order.status === 'กำลังทำ' ? `<button onclick="socket.emit('mark-done', '${id}')" class="bg-green-500 text-white text-xs px-3 py-1 rounded font-bold">เสิร์ฟแล้ว</button>` : ''}
-                        <button onclick="if(confirm('ยืนยันเช็คบิล?')) socket.emit('clear-table', '${order.table}')" class="bg-red-500 text-white text-xs px-3 py-1 rounded font-bold">เช็คบิล</button>
+                        ${order.status === 'กำลังทำ' ? `<button onclick="socket.emit('mark-done', '${id}')" class="bg-green-500 text-white text-xs px-3 py-1 rounded font-bold hover:bg-green-600 transition">เสิร์ฟแล้ว</button>` : ''}
+                        <button onclick="if(confirm('ยืนยันชำระเงิน? โต๊ะนี้จะไม่สามารถกดสั่งอาหารเพิ่มได้อีก')) socket.emit('clear-table', '${order.table}')" class="bg-red-500 text-white text-xs px-3 py-1 rounded font-bold hover:bg-red-600 transition">ชำระเงิน (ปิดโต๊ะ)</button>
                     </div>
                 `;
                 orderList.appendChild(orderBox);
