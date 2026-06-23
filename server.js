@@ -3,28 +3,54 @@ const app = express();
 const http = require('http').createServer(app);
 const cors = require('cors');
 
-// เปิดใช้งาน CORS เพื่อให้หน้าเว็บสแกนข้ามเครือข่ายมาคุยได้
 app.use(cors());
-app.use(express.static('.')); // ให้เรียกใช้ไฟล์ html ในโฟลเดอร์นี้ได้
+app.use(express.static('.'));
 
 const io = require('socket.io')(http, {
-    cors: {
-        origin: "*", // ยอมรับการเชื่อมต่อจากทุก IP (เหมาะสำหรับมือถือสแกนเข้าคอม)
-        methods: ["GET", "POST"]
-    }
+    cors: { origin: "*", methods: ["GET", "POST"] }
 });
 
-let activeOrders = {}; // สำหรับเก็บออเดอร์ชั่วคราวใน Server
+let activeOrders = {};  // เก็บรายการออเดอร์ที่ห้องครัวกำลังทำ
+let activeTables = {};  // เก็บข้อมูลโต๊ะที่กำลังกินอยู่ และ ยอดรวมเงินทั้งหมดของโต๊ะนั้น {"1": { expires: 12345, grandTotal: 500 }}
+
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/admin.html');
+});
 
 io.on('connection', (socket) => {
-    console.log('มีผู้ใช้งานเชื่อมต่อเข้ามา: ' + socket.id);
-
-    // เมื่อเปิดหน้าแอดมิน ให้ส่งออเดอร์ปัจจุบันทั้งหมดไปให้ดู
+    // ส่งข้อมูลตั้งต้นให้แอดมินเห็นออเดอร์ค้างทั้งหมดเมื่อเปิดหน้าจอ
     socket.emit('init-orders', activeOrders);
 
-    // ลูกค้าส่งออเดอร์เข้ามา
-    socket.on('submit-order', (data) => {
-        const orderId = Date.now().toString(); // ใช้เวลาเป็นรหัสออเดอร์
+    // 1. ลงทะเบียนเปิดโต๊ะใหม่ และเซ็ตยอดเริ่มต้นเป็น 0 บาท
+    socket.on('open-table', (data) => {
+        activeTables[data.table] = {
+            expires: parseInt(data.expires),
+            grandTotal: 0
+        };
+        console.log(`[ระบบ] เปิดโต๊ะอลาคาร์ท โต๊ะ ${data.table} สำเร็จ`);
+    });
+
+    // 2. ตรวจสอบสถานะสิทธิ์ของโต๊ะเมื่อลูกค้าสแกนเข้ามา
+    socket.on('check-table-status', (data, callback) => {
+        const tableData = activeTables[data.table];
+        
+        if (!tableData) {
+            callback({ status: 'closed', message: 'โต๊ะนี้ยังไม่ได้เปิดระบบ หรือถูกเช็คบิลเรียบร้อยแล้ว' });
+        } else if (Date.now() > tableData.expires) {
+            delete activeTables[data.table]; 
+            callback({ status: 'expired', message: 'หมดเวลาทานอาหาร 90 นาทีแล้วครับ' });
+        } else {
+            callback({ status: 'active', expires: tableData.expires });
+        }
+    });
+
+    // 3. ลูกค้าส่งออเดอร์เข้ามา (ระบบจะบวกยอดสะสมของโต๊ะเพิ่มขึ้นตามจริง)
+    socket.on('submit-order', (data, callback) => {
+        if (!activeTables[data.table]) {
+            return callback({ success: false, message: 'ส่งออเดอร์ไม่ได้ เนื่องจากโต๊ะนี้ถูกเช็คบิลปิดไปแล้ว' });
+        }
+
+        const orderId = Date.now().toString();
         const newOrder = {
             id: orderId,
             table: data.table,
@@ -35,11 +61,14 @@ io.on('connection', (socket) => {
         
         activeOrders[orderId] = newOrder;
 
-        // ยิงข้อมูลบอกหน้าแอดมินทุกเครื่องทันทีแบบ Real-time
+        // 💰 ลอจิกอลาคาร์ท: บวกเงินสะสมเพิ่มเข้าไปในบิลหลักของโต๊ะนี้
+        activeTables[data.table].grandTotal += data.totalPrice;
+
         io.emit('order-updated', activeOrders);
+        callback({ success: true });
     });
 
-    // พนักงานกด "ทำเรียบร้อย"
+    // 4. พนักงานกด "เสิร์ฟแล้ว"
     socket.on('mark-done', (orderId) => {
         if (activeOrders[orderId]) {
             activeOrders[orderId].status = "เสิร์ฟแล้ว";
@@ -47,9 +76,16 @@ io.on('connection', (socket) => {
         }
     });
 
-    // พนักงานกด "ชำระเงิน" (เคลียร์โต๊ะ)
+    // 5. พนักงานกดชำระเงิน (ระบบจะดึงยอดรวมสะสมทั้งหมดของโต๊ะมาพ่นบอกที่คอนโซล)
     socket.on('clear-table', (tableNum) => {
-        // ลบออเดอร์ทั้งหมดของโต๊ะนี้
+        const totalBill = activeTables[tableNum] ? activeTables[tableNum].grandTotal : 0;
+        
+        console.log(`💰 [ชำระเงิน] โต๊ะที่ ${tableNum} เช็คบิลแล้ว ยอดรวมรวมทั้งหมด: ${totalBill} บาท`);
+
+        // ตัดสิทธิ์โต๊ะทันที
+        delete activeTables[tableNum];
+
+        // ลบออเดอร์ค้างของโต๊ะนี้ออกจากครัว
         Object.keys(activeOrders).forEach(id => {
             if (activeOrders[id].table === tableNum) {
                 delete activeOrders[id];
@@ -59,8 +95,7 @@ io.on('connection', (socket) => {
     });
 });
 
-// รันที่พอร์ต 3000
 const PORT = process.env.PORT || 3000;
 http.listen(PORT, () => {
-    console.log(`🚀 Socket.io Server กำลังทำงานที่พอร์ต http://localhost:${PORT}`);
+    console.log(`🚀 อลาคาร์ทระบบเซิร์ฟเวอร์เปิดใช้งานที่พอร์ต http://localhost:${PORT}`);
 });
