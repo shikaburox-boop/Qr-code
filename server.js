@@ -30,10 +30,12 @@ io.on('connection', (socket) => {
         console.log(`[ระบบ] เปิดโต๊ะอลาคาร์ท โต๊ะ ${data.table} สำเร็จ`);
     });
 
-    // 2. ตรวจสอบสถานะสิทธิ์ของโต๊ะเมื่อลูกค้าสแกนเข้ามา
+    // 2. ตรวจสอบสถานะสิทธิ์ของโต๊ะเมื่อลูกค้าสแกนเข้ามา (รองรับ callback ปลอดภัย)
     socket.on('check-table-status', (data, callback) => {
         const tableData = activeTables[data.table];
         
+        if (typeof callback !== 'function') return; // ป้องกันระบบพังหากไม่มีการส่ง callback มา
+
         if (!tableData) {
             callback({ status: 'closed', message: 'โต๊ะนี้ยังไม่ได้เปิดระบบ หรือถูกเช็คบิลเรียบร้อยแล้ว' });
         } else if (Date.now() > tableData.expires) {
@@ -44,10 +46,14 @@ io.on('connection', (socket) => {
         }
     });
 
-    // 3. ลูกค้าส่งออเดอร์เข้ามา (ระบบจะบวกยอดสะสมของโต๊ะเพิ่มขึ้นตามจริง)
+    // 3. ลูกค้าส่งออเดอร์เข้ามา (แก้ไขเพื่อให้รองรับโค้ดฝั่งหน้าเว็บทุกเวอร์ชัน ออเดอร์เข้าแน่นอน)
     socket.on('submit-order', (data, callback) => {
+        // 🛠️ แก้ไข: หากเปิดโต๊ะจากหน้าแอดมินไม่ทัน ให้สร้างข้อมูลโต๊ะเริ่มต้นให้อัตโนมัติเพื่อป้องกันออเดอร์หลุด
         if (!activeTables[data.table]) {
-            return callback({ success: false, message: 'ส่งออเดอร์ไม่ได้ เนื่องจากโต๊ะนี้ถูกเช็คบิลปิดไปแล้ว' });
+            activeTables[data.table] = {
+                expires: Date.now() + (90 * 60 * 1000), // ให้เวลาตั้งต้น 90 นาที
+                grandTotal: 0
+            };
         }
 
         const orderId = Date.now().toString();
@@ -64,8 +70,13 @@ io.on('connection', (socket) => {
         // 💰 ลอจิกอลาคาร์ท: บวกเงินสะสมเพิ่มเข้าไปในบิลหลักของโต๊ะนี้
         activeTables[data.table].grandTotal += data.totalPrice;
 
+        // ยิงข้อมูลอัปเดตไปให้หน้าจอ admin.html ทันที
         io.emit('order-updated', activeOrders);
-        callback({ success: true });
+        
+        // 🛠️ แก้ไข: ตรวจสอบก่อนเรียกใช้งาน callback เพื่อป้องกัน Java/Node.js เกิด Error
+        if (typeof callback === 'function') {
+            callback({ success: true });
+        }
     });
 
     // 4. พนักงานกด "เสิร์ฟแล้ว"
