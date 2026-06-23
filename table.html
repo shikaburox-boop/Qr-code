@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สั่งอาหารประจำโต๊ะ (Socket.io)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen pb-44">
+
+    <div class="bg-amber-500 text-white p-4 sticky top-0 shadow-md flex justify-between items-center z-50">
+        <h1 class="text-xl font-bold">🍲 โต๊ะที่ <span id="table-heading">-</span></h1>
+        <div id="timer" class="bg-amber-700 px-3 py-1 rounded-full text-xs font-semibold">กำลังคำนวณเวลา...</div>
+    </div>
+
+    <div class="p-4 max-w-md mx-auto space-y-3">
+        <div class="bg-white p-4 rounded-xl shadow flex justify-between items-center">
+            <div><h3 class="font-bold text-gray-800">🥩 เนื้อริบอาย</h3><p class="text-sm text-gray-500">0 บาท</p></div>
+            <div class="flex items-center space-x-3">
+                <button onclick="changeQty('เนื้อริบอาย', 0, -1)" class="w-8 h-8 bg-gray-200 rounded-full font-bold">-</button>
+                <button onclick="changeQty('เนื้อริบอาย', 0, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold">+</button>
+            </div>
+        </div>
+        <div class="bg-white p-4 rounded-xl shadow flex justify-between items-center">
+            <div><h3 class="font-bold text-gray-800">🥤 เก๊กฮวย</h3><p class="text-sm text-amber-600 font-medium">+39 บาท</p></div>
+            <div class="flex items-center space-x-3">
+                <button onclick="changeQty('เก๊กฮวย', 39, -1)" class="w-8 h-8 bg-gray-200 rounded-full font-bold">-</button>
+                <button onclick="changeQty('เก๊กฮวย', 39, 1)" class="w-8 h-8 bg-amber-500 text-white rounded-full font-bold">+</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-50 shadow-2xl">
+        <div class="max-w-md mx-auto">
+            <h3 class="font-bold text-sm text-gray-700 mb-1">🛒 ตะกร้าสินค้า (ดูก่อนส่ง):</h3>
+            <div id="cart-container" class="max-h-24 overflow-y-auto mb-3 text-gray-500 italic text-center py-2">ยังไม่มีของ</div>
+            <div class="flex justify-between items-center mb-3">
+                <span class="font-bold">ราคารวมรอบนี้:</span>
+                <span class="text-xl font-bold text-amber-600"><span id="total-price">0</span> บาท</span>
+            </div>
+            <button id="btn-submit" onclick="sendOrder()" class="w-full bg-emerald-500 text-white py-3 rounded-xl font-bold text-lg shadow-lg">🚀 ยืนยันส่งเข้าครัว</button>
+        </div>
+    </div>
+
+    <script>
+        const socket = io(window.location.origin);
+        const urlParams = new URLSearchParams(window.location.search);
+        const tableNum = urlParams.get('table') || "X";
+        const expiresAt = parseInt(urlParams.get('expires')) || Date.now();
+
+        document.getElementById('table-heading').innerText = tableNum;
+
+        // จับเวลา 90 นาที
+        const timerInterval = setInterval(() => {
+            const timeLeft = expiresAt - Date.now();
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('timer').innerText = "หมดเวลาสั่ง";
+                document.getElementById('btn-submit').disabled = true;
+                document.getElementById('btn-submit').innerText = "QR หมดอายุ";
+                Swal.fire('หมดเวลา!', 'กรุณาขอ QR Code ใหม่', 'error');
+                return;
+            }
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+            document.getElementById('timer').innerText = `เหลือเวลา: ${minutes}:${seconds < 10 ? '0':''}${seconds}`;
+        }, 1000);
+
+        let cart = {};
+        window.changeQty = (name, price, num) => {
+            if (!cart[name]) cart[name] = { price, qty: 0 };
+            cart[name].qty += num;
+            if (cart[name].qty <= 0) delete cart[name];
+            renderCart();
+        };
+
+        function renderCart() {
+            const container = document.getElementById('cart-container');
+            container.innerHTML = ''; let total = 0;
+            Object.keys(cart).forEach(name => {
+                total += cart[name].price * cart[name].qty;
+                container.innerHTML += `<div class="flex justify-between text-sm py-1 border-b"><span>🔹 ${name} (x${cart[name].qty})</span><span>${cart[name].price * cart[name].qty} บ.</span></div>`;
+            });
+            if(Object.keys(cart).length === 0) container.innerHTML = 'ยังไม่มีของ';
+            document.getElementById('total-price').innerText = total;
+        }
+
+        window.sendOrder = () => {
+            if(Object.keys(cart).length === 0) return Swal.fire('ตะกร้าว่าง', 'เลือกอาหารก่อนครับ', 'warning');
+            
+            const items = Object.keys(cart).map(name => ({ name, qty: cart[name].qty }));
+            const totalPrice = Object.keys(cart).reduce((sum, name) => sum + (cart[name].price * cart[name].qty), 0);
+
+            // ส่งข้อมูลผ่านท่อ Socket ไปยัง Server หลังบ้าน
+            socket.emit('submit-order', { table: tableNum, items, totalPrice });
+
+            Swal.fire('สำเร็จ!', 'ส่งออเดอร์เข้าห้องครัวแล้วครับ', 'success');
+            cart = {}; renderCart();
+        };
+    </script>
+</body>
+</html>
